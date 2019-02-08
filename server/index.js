@@ -10,6 +10,7 @@ const ctrl = require('./controller')
 const app = express()
 
 app.use(json())
+app.use(express.static('build'))
 app.use(session({
     secret: SESSION_SECRET,
     resave: false,
@@ -30,3 +31,6 @@ app.post('/auth/logout', ctrl.logout)
 
 //posts
 app.get('/posts/:id', ctrl.getAllMessages)
+
+//user
+app.get('/session/user', ctrl.getUser)

@@ -15,6 +15,17 @@ class Auth extends Component {
         this.login = this.login.bind(this)
     }
 
+    componentDidMount() {
+        axios.get('/session/user')
+            .then(res => {
+                this.props.updateUser(res.data)
+                this.props.history.push('/dashboard')
+            })
+            .catch(error => {
+
+            })
+    }
+
     handleChange = (val, name) => {
         // console.log(name, val)
         this.setState({

@@ -49,12 +49,14 @@ module.exports = {
     },
     getAllMessages: async (req, res) => {
         const db = req.app.get('db')
-        const { userposts, search } = req.query
+        let { userposts, search } = req.query
         const { id } = req.params
+        search ? search = '%' + search + '%' : search = ''
+        userposts == 'false' ? userposts = false : userposts = true
         
         let messages = []
         
-        console.log(userposts, search, id)
+        console.log(search, userposts)
         if (userposts && search) {
             console.log('1')
             messages = await db.messages.get_user_filter_posts({ id, search })
@@ -70,5 +72,14 @@ module.exports = {
         }
         
         return res.status(200).send(messages)
+    },
+    getUser: (req, res) => {
+        const {user} = req.session
+
+        if(user) {
+            res.send(user)
+        } else {
+            res.status(401).send('Forbidden')
+        }
     }
 }
