@@ -6,9 +6,9 @@ module.exports = {
         const db = req.app.get('db')
         const { session } = req
 
-        let user = await db.user.check_user({username: username})
+        let user = await db.user.check_user({ username: username })
         user = user[0]
-        if(user) {
+        if (user) {
             return res.status(400).send('User already created')
         }
 
@@ -18,7 +18,7 @@ module.exports = {
         let newUser = await db.user.register_user({ username: username, password: hash })
         newUser = newUser[0]
 
-        session.user = {...newUser}
+        session.user = { ...newUser }
 
         res.status(201).send(session.user)
     },
@@ -27,14 +27,14 @@ module.exports = {
         const db = req.app.get('db')
         const { session } = req
 
-        let  user = await db.user.login({username: username})
+        let user = await db.user.login({ username: username })
         user = user[0]
-        if(!user) {
+        if (!user) {
             return res.status(400).send('User not found')
         }
 
         const foundUser = bcrypt.compareSync(password, user.password)
-        if(foundUser) {
+        if (foundUser) {
             delete user.password
             session.user = user
             res.send(session.user)
@@ -46,5 +46,29 @@ module.exports = {
     logout: (req, res) => {
         req.session.destroy()
         res.sendStatus(200)
+    },
+    getAllMessages: async (req, res) => {
+        const db = req.app.get('db')
+        const { userposts, search } = req.query
+        const { id } = req.params
+        
+        let messages = []
+        
+        console.log(userposts, search, id)
+        if (userposts && search) {
+            console.log('1')
+            messages = await db.messages.get_user_filter_posts({ id, search })
+        } else if (!userposts && !search) {
+            console.log('2')
+            messages = await db.messages.get_other_posts({ id })
+        } else if (!userposts && search) {
+            console.log('3')
+            messages = await db.messages.get_other_posts_filter({ id, search })
+        } else {
+            console.log('4')
+            messages = await db.messages.get_user_posts({ id })
+        }
+        
+        return res.status(200).send(messages)
     }
 }

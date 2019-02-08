@@ -27,3 +27,6 @@ massive(CONNECTION_STRING)
 app.post('/auth/register', ctrl.register)
 app.post('/auth/login', ctrl.login)
 app.post('/auth/logout', ctrl.logout)
+
+//posts
+app.get('/posts/:id', ctrl.getAllMessages)

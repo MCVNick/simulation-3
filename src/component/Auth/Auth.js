@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import { connect } from 'react-redux'
+import { updateUser } from './../../ducks/reducer'
 import './Auth.css'
 
 class Auth extends Component {
@@ -10,6 +12,7 @@ class Auth extends Component {
             username: '',
             password: ''
         }
+        this.login = this.login.bind(this)
     }
 
     handleChange = (val, name) => {
@@ -19,11 +22,12 @@ class Auth extends Component {
         })
     }
 
-    login = () => {
+    login() {
         const { username, password } = this.state
 
         axios.post('/auth/login', { username, password })
             .then(res => {
+                this.props.updateUser(res.data)
                 this.props.history.push('/dashboard')
             })
     }
@@ -34,6 +38,7 @@ class Auth extends Component {
         if (username && password && username.length <= 20 && password.length <= 20) {
             axios.post('/auth/register', { username, password })
                 .then(res => {
+                    this.props.updateUser(res.data)
                     this.props.history.push('/dashboard')
                 })
         }
@@ -51,4 +56,7 @@ class Auth extends Component {
     }
 }
 
-export default Auth
+const mapDispatchToProps = { updateUser }
+
+const connectComponent = connect(null, mapDispatchToProps)(Auth)
+export default connectComponent
